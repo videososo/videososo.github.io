@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<!-- saved from url=(0037)user/index/query -->
+<html lang="zh"><head id="jifkcciiigbfigfcehmmoaomdjdngceo"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="keywords" content="查作品">
+    <meta name="description" content="您精心构筑的精美资源社区平台。体验个性化推荐，网友交流，精准推送，参与活跃交流分享，探索无尽资源。即刻启程，开启属于您的资源冒险">
+    <link href="favicon.ico?v=1.1.7" rel="icon">
+    <link rel="stylesheet" href="/bootstrap.min.css">
+    <link rel="stylesheet" href="/font-awesome.min.css">
+    <link rel="stylesheet" href="/i.css">
+
+    <script src="/jquery.min.js"></script>
+    <script src="/jquery.sliderBar.js"></script>
+    <script src="/layer.js"></script><link rel="stylesheet" href="/layer.css" id="layuicss-layer">
+    <script src="/clipboard.js"></script>
+	<script src="/cooooo.js"></script>
+    <title>查作品</title>
+    <!--start::HOOK-->
+    
+    
+    <!--end::HOOK-->
+</head>
+<body style="background: url(&#39;/assets/admin/images/login/bg.jpg&#39;) fixed no-repeat;background-size: cover;">
+<div id="app">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: rgba(255,255,255,0.85) !important;">
+        <div class="container">
+           <div class="navbar-brand">
+               <a href="">
+                   <img src="/favicon.ico" height="30px" style="border-radius: 50%;box-shadow: #f0d1d4 1px 1px 1px;">
+                    <span style="position: relative;top: 4px;left: 3px;font-weight: bold;color: #1396558a;">  查作品​                 </span></a>
+                  <a href="user/authentication/login?goto=/"><span style="position: relative;top: 4px;left: 10px;font-size: 18px;color: #79b9fbbd;font-weight: bold;"><i class="fa fa-sign-in"></i> 登录</span></a>            </div>
+            <div class="row">
+                <a class="nav-link" href="" style="font-weight: bolder;"><i class="fa fa-shopping-cart" aria-hidden="true"></i>首页</a>
+                <a class="nav-link" href="user/index/query" style="font-weight: bolder;"><i class="fa fa-search-plus" aria-hidden="true"></i> 查单子</a>
+                                        </div>
+            <!--<div class="navbar-collapse">
+                <ul class="navbar-nav mr-auto"></ul>
+            </div>-->
+        </div>
+    </nav>
+<div class="content-wrapper">
+    <div class="container">
+
+        <div class="card">
+            <div class="card-header">
+                <p class="card-title">查作品 </p>
+            </div>
+            <div class="card-block" style="padding-top: 10px;padding-bottom: 10px">
+                <fieldset>
+                    <div class="input-group">
+                        <input type="text" class="form-control keywords" placeholder="请输入作品名进行查询" autocomplete="off" value="">
+                        <div class="input-group-append">
+                            <button class="btn btn-success queryBtn">查询</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="card queryView" style="display: none;">
+            <div class="card-header">
+                <p class="card-title">查询结果</p>
+            </div>
+            <div class="card-block" style="margin-top: 10px;">
+                <h1 class="text-center notfound" style="display: none;">未查询到相关作品</h1>
+                <div class="order-success" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    let keywordsIns = $('.keywords');
+
+    function query(keywords) {
+        let orderSuccess = $('.order-success');
+        $('.notfound').hide();
+        orderSuccess.hide();
+        orderSuccess.html('');
+        $('.payDateView').hide();
+        $('.queryView').show();
+        let orderId = 0;
+        Pay.getQuery(keywords, res => {
+            res.forEach(order => {
+                if (order.commodity && order.pay) {
+                    let status = '<span style="color: red;">未获取</span>';
+                    if (order.status === 1) {
+                        status = '<span style="color: green;">已获取</span>';
+                    }
+
+                    let race = "";
+                    if (order.race) {
+                        race = " ( <b style='color: #20b033;'>" + order.race + "</b> )";
+                    }
+
+                    let html = '<div class="hr-top">\n' +
+                        '                        <div style="font-size: 14px;">作品号：<b class="trade_no">' + order.trade_no + '</b>  </div>\n' +
+                        '                        <div style="font-size: 14px;">获取等级：<b style="color: red;" class="amount">' + order.amount + '</b></div>\n' +
+                        '                        <div style="font-size: 14px;">获取数量：<b style="color: blue;" class="buyNum">' + order.card_num + '</b></div>\n' +
+                        '                        <div style="font-size: 14px;">获取时间：<b class="create_time">' + order.create_time + '</b></div>\n' +
+                        '                        <div style="font-size: 14px;">作品名称：<b class="commodity_name">' + order.commodity.name + race + '</b></div>\n' +
+                        '                        <div style="font-size: 14px;">支付方式：<b class="icon"><img src="' + order.pay.icon + '" height="16px"> ' + order.pay.name + '</b></div>\n' +
+                        '                        <div style="font-size: 14px;">作品状态：<b class="status">' + status + '</b></div>\n' +
+                        '                        <div style="font-size: 14px;' + (order.status == 1 ? '' : 'display: none;') + '" class="payDateView">支付时间：<b class="pay_date"\n' +
+                        '                                                                                                style="color: green;">' + order.pay_time + '</b>\n' +
+                        '                        </div>\n' +
+                        '                        <div style="font-size: 14px;">技术支持：<b style="color: #d78aeb;font-weight: bold;"><img src="' + order.business_avatar + '" style="height: 18px;border-radius: 100%;margin-top: -3px;"> ' + order.business_username + '</b> [ <a target="_blank" href="https://wpa.qq.com/msgrd?v=1&uin=' + order.service_qq + '" style="color: #2aa2e3;padding:0 4px 0 4px;font-size: 12px;margin:0 4px 0 0;border-radius: 5px;" class="button-click"><i class="fa fa-qq"></i> QQ客服</a><a target="_blank" href="' + order.service_url + '" class="button-click" style="color: #ff8484;padding:0 4px 0 4px;margin:0;font-size: 12px;border-radius: 5px;"><i class="fa fa-user-plus"></i> 网页客服</a> ]</div>\n' +
+                        '                        <div style="font-size: 14px;' + (order.leave_message ? "" : " display: none;") + '">使用说明：<b>' + order.leave_message + '</b></div>\n' +
+                        '                        <div style="font-size: 14px;">信息：<input style="border: none;box-shadow: #f0d1d4 1px 1px 1px;height: 18px;width:130px;' + (order.commodity.password_status == 1 ? '' : 'display:none;') + '"  type="password" placeholder="请输入查询密码.." class="passId-' + order.id + '"> <b style="cursor:pointer;color: blue;" class="getCard" data-id="' + order.id + '" data-no="' + order.trade_no + '">查看</b></div>\n' +
+                        '                        <div style="margin-top: 10px; display: none;" class="cardInfoView-' + order.id + '">\n' +
+                        '                            <textarea class="form-control cardInfo-' + order.id + '" style="height: 420px;"></textarea>\n' +
+                        '                        </div>\n' +
+                        '                    </div>';
+                    orderSuccess.append(html);
+                }
+
+            });
+            orderSuccess.show();
+
+            $('.getCard').click(function () {
+                let orderId = $(this).attr('data-id');
+                let no = $(this).attr('data-no');
+                Pay.getSecret(no, $('.passId-' + orderId).val(), res => {
+                    let secret = "";
+                    if (res.widget) {
+                        secret += "--------------您隐私内容---------------\n";
+                        for (const widgetKey in res.widget) {
+                            secret += res.widget[widgetKey].cn + "：" + res.widget[widgetKey].value + "\n";
+                        }
+                        secret += "--------------信息---------------\n";
+                    }
+                    secret += res.secret;
+                    $('.cardInfo-' + orderId).html(secret);
+                    $('.cardInfoView-' + orderId).show(80);
+                });
+            });
+        }, () => {
+            $('.notfound').show();
+        });
+    }
+
+    $('.queryBtn').click(function () {
+        query(keywordsIns.val());
+    });
+
+    </script>
+<div class="content-icp"></div>
+</body><!--start::HOOK--></html>
